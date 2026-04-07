@@ -60,7 +60,17 @@ After do |scenario|
       puts ""
       puts "*** Browser logs:"
       puts ""
-      puts page.driver.browser.manage.logs.get("browser").map { |log_entry|
+      browser = page.driver.browser
+
+      log_entries = if browser.respond_to?(:logs)
+        browser.logs.get(:browser)
+      elsif browser.respond_to?(:manage) && browser.manage.respond_to?(:logs)
+        browser.manage.logs.get('browser')
+      else
+        []
+      end
+
+      puts log_entries.map { |log_entry|
         "[#{Time.at(log_entry.timestamp.to_i)}] [#{log_entry.level}] #{log_entry.message}"
       }.join("\n")
     end

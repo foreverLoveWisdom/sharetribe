@@ -8,7 +8,7 @@ module NavigationHelpers
   def path_to(page_name)
     case page_name
 
-    when /the home\s?page/
+    when /^the home\s?page$/
       '/'
     when /the signup page/
       '/en/signup'
@@ -164,8 +164,8 @@ module NavigationHelpers
       admin_community_listings_path(:community_id => @current_community.id)
     when /the person custom fields admin page/
       admin_person_custom_fields_path(:locale => "en")
-    when /the big cover photo home page/
-      '/?big_cover_photo=true'
+    when /^the big cover photo home page$/
+      homepage_with_locale_path(locale: 'en', big_cover_photo: true)
     when /the landing page admin page/
       admin_landing_page_versions_path(:locale => "en")
     when /^the landing page section of "(.*)" admin page$/

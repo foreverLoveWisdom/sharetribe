@@ -5,7 +5,6 @@
   "app/utils/http_utils",
 ].each { |file| require_relative "../../../../#{file}" }
 
-require 'transit'
 require 'active_support/json'
 require 'uuidtools'
 

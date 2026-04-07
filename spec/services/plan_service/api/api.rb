@@ -3,7 +3,7 @@ require_relative '../../../../app/services/plan_service/api/no_plans'
 
 module PlanService::API
   class API
-    Configuration = PlanService::DataTypes::Configuration
+    Configuration = PlanService::DataTypes::Configuration unless const_defined?(:Configuration, false)
 
     def self.plans
       configuration = build_configuration

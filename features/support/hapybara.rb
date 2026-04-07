@@ -3,12 +3,30 @@ Capybara.register_driver :selenium_chrome_headless do |app|
 
   [
     "--headless",
-    "--window-size=1600x1280",
-    "--start-maximized",
-    "--disable-gpu" # https://developers.google.com/web/updates/2017/04/headless-chrome
+    "--disable-gpu",
+    "--no-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-setuid-sandbox",
+    "--disable-background-networking",
+    "--disable-background-timer-throttling",
+    "--disable-renderer-backgrounding",
+    "--disable-features=site-per-process,TranslateUI",
+    "--disable-breakpad",
+    "--disable-sync",
+    "--disable-translate",
+    "--metrics-recording-only",
+    "--no-first-run",
+    "--safebrowsing-disable-auto-update",
+    "--disable-default-apps",
+    "--disable-backgrounding-occluded-windows",
+    "--disable-component-extensions-with-background-pages"
   ].each { |arg| options.add_argument(arg) }
 
-  Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
+  Capybara::Selenium::Driver.new(
+    app,
+    browser: :chrome,
+    options: options
+  )
 end
 
 if false # rubocop:disable Lint/LiteralAsCondition

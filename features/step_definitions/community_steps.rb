@@ -27,7 +27,7 @@ Given /^the test community has following available locales:$/ do |locale_table|
   end
 
   #here is expected that the first community is the test community where the subdomain is pointing by default
-  community = Community.first
+  community = @current_community || Community.where(ident: "test").first || Community.first
   community.update({:settings => { "locales" => @locales }})
   community.locales.each do |locale|
     unless community.community_customizations.find_by_locale(locale)

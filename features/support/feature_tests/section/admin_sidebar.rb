@@ -6,19 +6,19 @@ module FeatureTests
       module_function
 
       def click_payments_link
-        sidebar.click_on("Payment system")
+        sidebar.find("a[aria-controls='paymentsystem'], a[aria-controls='paymentsystem-mobile'], a[href='#paymentsystem'], a[href='#paymentsystem-mobile']").click
       end
 
       def click_paypal_link
-        sidebar.click_on("PayPal settings")
+        sidebar.find("li#paypal a, li#paypal-mobile a").click
       end
 
       def click_stripe_link
-        sidebar.click_on("Stripe settings")
+        sidebar.find("li#stripe a, li#stripe-mobile a").click
       end
 
       def sidebar
-        find(".layout-container .sidenav-links")
+        find("aside.sidenav-container .sidenav-links")
       end
     end
   end

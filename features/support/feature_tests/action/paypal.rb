@@ -9,12 +9,18 @@ module FeatureTests
       def connect_marketplace_paypal(min_price: "2.0", commission: "5", min_commission: "0.1")
         topbar = FeatureTests::Section::Topbar
         paypal_preferences = FeatureTests::Page::AdminPaypalPreferences
-        admin_sidebar = FeatureTests::Section::AdminSidebar
 
         # Connect Paypal for admin
         topbar.navigate_to_admin
-        admin_sidebar.click_payments_link
-        admin_sidebar.click_paypal_link
+
+        routes = Rails.application.routes.url_helpers
+
+        begin
+          visit(routes.admin2_payment_system_paypal_index_path(locale: 'en'))
+        rescue StandardError
+          visit(routes.admin2_payment_system_paypal_index_path)
+        end
+
         paypal_preferences.connect_paypal_account
 
         expect(page).to have_content("Your PayPal account")

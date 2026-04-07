@@ -1,50 +1,51 @@
+# transit-ruby removed - using JSON serialization instead (msgpack incompatible with Ruby 3.2+)
 module TransitUtils
-
-  class UUIDWriteHandler
-    def tag(_)
-      "u"
-    end
-
-    def rep(u)
-      tu = Transit::UUID.new(u.to_s)
-      [tu.most_significant_bits, tu.least_significant_bits]
-    end
-
-    def string_rep(u)
-      u.to_s
-    end
-  end
-
-  class UUIDReadHandler
-    def from_rep(u)
-      UUIDTools::UUID.parse(Transit::UUID.new(u).to_s)
-    end
-  end
 
   module_function
 
-  def encode(content, encoding)
-    io = StringIO.new('', 'w+')
+  # Custom JSON encoder that handles UUIDs
+  class UUIDEncoder
+    def self.encode(obj)
+      case obj
+      when UUIDTools::UUID
+        { '_type' => 'uuid', 'value' => obj.to_s }
+      when Hash
+        obj.transform_values { |v| encode(v) }
+      when Array
+        obj.map { |v| encode(v) }
+      else
+        obj
+      end
+    end
 
-    writer = Transit::Writer.new(
-      encoding,
-      io,
-      handlers: {
-        UUIDTools::UUID => UUIDWriteHandler.new
-      })
-    writer.write(content)
-    io.string
+    def self.decode(obj)
+      case obj
+      when Hash
+        type = obj['_type'] || obj[:_type]
+        if type == 'uuid'
+          value = obj['value'] || obj[:value]
+          UUIDTools::UUID.parse(value)
+        else
+          obj.transform_values { |v| decode(v) }
+        end
+      when Array
+        obj.map { |v| decode(v) }
+      else
+        obj
+      end
+    end
   end
 
-  # Takes `content` (String) and `encoding` and decodes the Transit
-  # message
-  def decode(content, encoding)
-    Transit::Reader.new(
-      encoding,
-      StringIO.new(content),
-      handlers: {
-        "u" => UUIDReadHandler.new
-      }).read
+  # Encode content to JSON (encoding parameter kept for API compatibility)
+  def encode(content, encoding = :json)
+    encoded_content = UUIDEncoder.encode(content)
+    JSON.generate(encoded_content)
+  end
+
+  # Decode content from JSON (encoding parameter kept for API compatibility)
+  def decode(content, encoding = :json)
+    parsed_content = JSON.parse(content, symbolize_names: true)
+    UUIDEncoder.decode(parsed_content)
   end
 
 end

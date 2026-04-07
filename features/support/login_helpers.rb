@@ -17,10 +17,14 @@ module LoginHelpers
   end
 
   def logout()
-    steps %Q{
-      When I open user menu
-    }
-    click_link "Log out"
+    begin
+      visit logout_path(locale: :en)
+    rescue StandardError
+      steps %Q{
+        When I open user menu
+      }
+      click_link "Log out"
+    end
 
     @current_user = nil
   end

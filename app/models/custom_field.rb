@@ -26,7 +26,7 @@
 class CustomField < ApplicationRecord
   include SortableByPriority # use `sort_priority()` for sorting
 
-  has_many :names, class_name: "CustomFieldName", dependent: :destroy
+  has_many :names, class_name: "CustomFieldName", dependent: :destroy, autosave: true
 
   has_many :category_custom_fields, dependent: :destroy
   has_many :categories, through: :category_custom_fields
@@ -66,11 +66,12 @@ class CustomField < ApplicationRecord
 
   def name_attributes=(attributes)
     build_attrs = attributes.map { |locale, value| {locale: locale, value: value } }
-    build_attrs.each do |name|
-      if existing_name = names.find_by_locale(name[:locale])
-        existing_name.update_attribute(:value, name[:value])
+    build_attrs.each do |attr|
+      existing_name = names.detect { |n| n.locale == attr[:locale] }
+      if existing_name
+        existing_name.value = attr[:value]
       else
-        names.build(name)
+        names.build(attr)
       end
     end
   end

@@ -277,6 +277,7 @@ describe ListingsController, type: :controller do
                                                process: :none)
     }
     let(:sell_shape) { create_shape(community.id, "Sell", offer_process) }
+    let(:category) { FactoryBot.create(:category, community: community) }
     let(:person) { FactoryBot.create(:person, member_of: community) }
     let(:listing) {
       FactoryBot.create(:listing,
@@ -431,7 +432,7 @@ describe ListingsController, type: :controller do
           "valid_until(3i)" => valid_until.day,
           "origin" => "",
           "origin_loc_attributes" => {"address"=>"", "google_address"=>"", "latitude"=>"", "longitude"=>""},
-          "category_id" => "1",
+          "category_id" => category.id.to_s,
           "listing_shape_id" => sell_shape[:id],
           "unit" => {:unit_type=>"unit", :kind=>"quantity"}.to_json
         }
@@ -494,23 +495,31 @@ describe ListingsController, type: :controller do
     it "shows renders custom meta tags with placeholders" do
       community.community_customizations.first.update(listing_meta_title: "{{listing_title}} - {{marketplace_name}}", listing_meta_description: "{{listing_title}} for {{listing_price}} by {{listing_author}} in {{marketplace_name}}")
       get :show, params: {id: listing.id}
-      expect(response.body).to match('<title>bike - Sharetribe</title>')
-      expect(response.body).to match("<meta content='bike - Sharetribe' property='og:title'>")
-      expect(response.body).to match("<meta content='bike - Sharetribe' name='twitter:title'>")
-      expect(response.body).to match("<meta content='bike for \\$45.67 per hour by Proto T in Sharetribe' name='description'>")
-      expect(response.body).to match("<meta content='bike for \\$45.67 per hour by Proto T in Sharetribe' name='twitter:description'>")
-      expect(response.body).to match("<meta content='bike for \\$45.67 per hour by Proto T in Sharetribe' property='og:description'>")
+      doc = Nokogiri::HTML(response.body)
+      expect(doc.at('title')&.text).to eq('bike - Sharetribe')
+      expect(doc.at("meta[property='og:title']")&.[]('content')).to eq('bike - Sharetribe')
+      expect(doc.at("meta[name='twitter:title']")&.[]('content')).to eq('bike - Sharetribe')
+
+      description = 'bike for $45.67 per hour by Proto T in Sharetribe'
+      expect(doc.at("meta[name='description']")&.[]('content')).to eq(description)
+      expect(doc.at("meta[name='twitter:description']")&.[]('content')).to eq(description)
+      expect(doc.at("meta[property='og:description']")&.[]('content')).to eq(description)
     end
 
     it "shows renders custom meta tags with placeholders
       for listing without price" do
       get :show, params: {id: listing_without_price.id}
-      expect(response.body).to match("<title>Batman-s Top 10 Amazing Halo Tips - Sharetribe</title>")
-      expect(response.body).to match("<meta content='Batman-s Top 10 Amazing Halo Tips - Sharetribe' property='og:title'>")
-      expect(response.body).to match("<meta content='Batman-s Top 10 Amazing Halo Tips - Sharetribe' name='twitter:title'>")
-      expect(response.body).to match("<meta content='Batman-s Top 10 Amazing Halo Tips by Proto T on Sharetribe' name='description'>")
-      expect(response.body).to match("<meta content='Batman-s Top 10 Amazing Halo Tips by Proto T on Sharetribe' name='twitter:description'>")
-      expect(response.body).to match("<meta content='Batman-s Top 10 Amazing Halo Tips by Proto T on Sharetribe' property='og:description'>")
+      doc = Nokogiri::HTML(response.body)
+
+      title = 'Batman-s Top 10 Amazing Halo Tips - Sharetribe'
+      expect(doc.at('title')&.text).to eq(title)
+      expect(doc.at("meta[property='og:title']")&.[]('content')).to eq(title)
+      expect(doc.at("meta[name='twitter:title']")&.[]('content')).to eq(title)
+
+      description = 'Batman-s Top 10 Amazing Halo Tips by Proto T on Sharetribe'
+      expect(doc.at("meta[name='description']")&.[]('content')).to eq(description)
+      expect(doc.at("meta[name='twitter:description']")&.[]('content')).to eq(description)
+      expect(doc.at("meta[property='og:description']")&.[]('content')).to eq(description)
     end
   end
 

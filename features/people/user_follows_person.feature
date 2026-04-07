@@ -37,6 +37,7 @@ Feature: User follows another user
     Then I should see 11 user profile links
 
     When I follow the first "Following"
+    Then I should see "Follow" within "#profile-followed-people-list"
     And I refresh the page
     Then I should see "You follow 10 people"
 

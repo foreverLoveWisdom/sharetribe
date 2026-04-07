@@ -19,19 +19,13 @@ require File.expand_path('../../lib/method_deprecator', __FILE__)
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-# Require Transit. This needs to be done manually, because the gem name
-# (transit-ruby) doesn't match to the module name (Transit) and that's
-# why Bundler doesn't know how to autoload it
-require 'transit'
-
-
 require File.expand_path('../../lib/sharetribe_middleware', __FILE__)
 
 module Kassi
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     # and thus class const
-    config.load_defaults 7.2
+    config.load_defaults 8.1
     config.active_record.belongs_to_required_by_default = false
 
     # This is a little cubersome, but this needs to be shared with the StylesheetCompiler,
@@ -237,7 +231,7 @@ module Kassi
     config.exceptions_app = self.routes
 
     config.active_job.queue_adapter = :delayed_job
-    config.action_controller.raise_on_open_redirects = false
+    config.action_controller.action_on_open_redirect = :allow
 
     # Maintain behavior of earlier Rails versions. The new default is to throw
     # on exception, when we want to handle as :null_session. See

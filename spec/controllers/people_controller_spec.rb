@@ -461,8 +461,9 @@ describe PeopleController, type: :controller do
       community.community_customizations.first.update(profile_meta_title: "Profile for {{user_display_name}}", profile_meta_description: "Want to know more about {{user_display_name}}")
       get :show, params: {username: person1.username}
       user_name = person1.name_or_username(community)
-      expect(response.body).to match("<title>Profile for #{user_name}</title>")
-      expect(response.body).to match("<meta content='Want to know more about #{user_name}' name='description'>")
+      doc = Nokogiri::HTML(response.body)
+      expect(doc.at('title')&.text).to eq("Profile for #{user_name}")
+      expect(doc.at("meta[name='description']")&.[]('content')).to eq("Want to know more about #{user_name}")
     end
   end
 

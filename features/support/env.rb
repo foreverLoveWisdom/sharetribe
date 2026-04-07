@@ -63,3 +63,11 @@ After('@no-transaction') do
   load_default_test_data_to_db_before_suite
   load_default_test_data_to_db_before_test
 end
+
+Before('@sphinx') do
+  ThinkingSphinx::Deltas.resume!
+end
+
+After('@sphinx') do
+  ThinkingSphinx::Deltas.suspend!
+end

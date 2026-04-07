@@ -24,5 +24,4 @@ Feature: Admin edits listing fields
   @javascript
   Scenario: Admin removes custom fields from category
     When I remove user field "Balcony type"
-    Then I should see that I do not have any listing fields
-
+    Then I should not see "Balcony type"

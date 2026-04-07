@@ -31,7 +31,13 @@ When(/^I click the community logo$/) do
 end
 
 When(/^I open language menu$/) do
-  find("#header-locales-menu").click
+  if page.has_css?("#header-locales-menu", wait: 0)
+    find("#header-locales-menu").click
+  elsif page.has_css?("#header-menu-mobile-anchor", wait: 0)
+    find("#header-menu-mobile-anchor").click
+  else
+    find("#header-menu-desktop-anchor").click
+  end
 end
 
 Then(/^I should (not see|see) "(.*)" on the menu$/) do |action, language|
@@ -41,15 +47,27 @@ Then(/^I should (not see|see) "(.*)" on the menu$/) do |action, language|
 end
 
 Then(/^I should see "(.*)" on the language menu$/) do |language|
-  steps %Q{
-    Then I should see "#{language}" within "#header-locales-toggle-menu"
-  }
+  if page.has_css?("#header-locales-toggle-menu", wait: 0)
+    steps %Q{
+      Then I should see "#{language}" within "#header-locales-toggle-menu"
+    }
+  else
+    steps %Q{
+      Then I should see "#{language}" within "#header-menu-toggle-menu"
+    }
+  end
 end
 
 When(/^I select "(.*)" from the language menu$/) do |language|
-  steps %Q{
-    When I follow "#{language}" within "#header-locales-toggle-menu"
-  }
+  if page.has_css?("#header-locales-toggle-menu", wait: 0)
+    steps %Q{
+      When I follow "#{language}" within "#header-locales-toggle-menu"
+    }
+  else
+    steps %Q{
+      When I follow "#{language}" within "#header-menu-toggle-menu"
+    }
+  end
 end
 
 When(/^I open the menu$/) do

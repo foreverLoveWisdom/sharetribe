@@ -17,7 +17,7 @@
 require 'spec_helper'
 
 RSpec.describe Unsubscribe, type: :model do
-  let(:invitation) { FactoryBot.create(:invitation, code: 'ABC', email: 'cindy@example.com') }
+  let(:invitation) { FactoryBot.create(:invitation, community: community, code: 'ABC', email: 'cindy@example.com') }
   let(:invitation_unsubscribe) { FactoryBot.create(:invitation_unsubscribe) }
   let(:community) { FactoryBot.create(:community) }
 

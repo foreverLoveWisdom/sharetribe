@@ -6,9 +6,9 @@ jobs:
     parallelism: 12
     # Call bash as interactive login shell to make sure nvm is loaded through .bashrc
     shell: /bin/bash -ileo pipefail
-    resource_class: small
+    resource_class: medium
     docker:
-      - image: cimg/ruby:3.2.2-browsers
+      - image: cimg/ruby:3.4.8-browsers
         environment:
           CIRCLE_TEST_REPORTS: /tmp/circleci-test-results
           MOCHA_FILE: /tmp/circleci-test-results/mocha.xml
@@ -39,7 +39,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - bundler-cache-v-8-{{ checksum "Gemfile.lock" }}
+            - bundler-cache-v-9-{{ checksum "Gemfile.lock" }}
       - restore_cache:
           keys:
             - node-cache-v9-{{ checksum "package.json" }}-{{ checksum "client/package-lock.json" }}
@@ -53,7 +53,7 @@ jobs:
           command: script/ci-install-deps.sh
       - run:
           name: Update rubygems and bundler
-          command: sudo gem update --system 3.4.6 --no-document
+          command: gem update --system --no-document
       - run:
           name: Configure bundler
           command: bundle config set --local without development
@@ -64,7 +64,7 @@ jobs:
           name: npm ci
           command: npm ci && cd client && npm ci
       - save_cache:
-          key: bundler-cache-v-8-{{ checksum "Gemfile.lock" }}
+          key: bundler-cache-v-9-{{ checksum "Gemfile.lock" }}
           paths:
             - vendor/bundle
             - ~/.bundle
@@ -114,7 +114,7 @@ jobs:
     shell: /bin/bash -ileo pipefail
     resource_class: small
     docker:
-      - image: cimg/ruby:3.2.2-browsers
+      - image: cimg/ruby:3.4.8-browsers
         environment:
           CIRCLE_TEST_REPORTS: /tmp/circleci-test-results
           MOCHA_FILE: /tmp/circleci-test-results/mocha.xml
@@ -131,7 +131,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - bundler-cache-v-8-{{ checksum "Gemfile.lock" }}
+            - bundler-cache-v-9-{{ checksum "Gemfile.lock" }}
       - restore_cache:
           keys:
             - node-cache-v9-{{ checksum "package.json" }}-{{ checksum "client/package-lock.json" }}
@@ -140,7 +140,7 @@ jobs:
           command: script/ci-install-deps.sh
       - run:
           name: Update rubygems and bundler
-          command: sudo gem update --system 3.4.6 --no-document
+          command: gem update --system --no-document
       - run:
           name: Configure bundler
           command: bundle config set --local without development
@@ -151,7 +151,7 @@ jobs:
           name: npm ci
           command: npm ci && cd client && npm ci
       - save_cache:
-          key: bundler-cache-v-8-{{ checksum "Gemfile.lock" }}
+          key: bundler-cache-v-9-{{ checksum "Gemfile.lock" }}
           paths:
             - vendor/bundle
             - ~/.bundle

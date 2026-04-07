@@ -660,13 +660,13 @@ Rails.application.routes.draw do
             post :posting_allowed
           end
         end
-        resource :paypal_preferences, only: :index do
+        resource :paypal_preferences, only: [] do
 
           # DEPRECATED (2015-11-16)
           # Do not add new routes here.
           # See the above :paypal_preferences routes, outside of communities resource
 
-          member do
+          collection do
             get :index,                to: redirect("/admin/paypal_preferences")
             post :preferences_update   # POST request, no redirect
             get :account_create,       to: redirect("/admin/paypal_preferences/account_create")
@@ -808,7 +808,7 @@ Rails.application.routes.draw do
       get :message_arrived
     end
 
-    devise_for :people, skip: :omniauth_callbacks, controllers: { confirmations: "confirmations", registrations: "people", omniauth_callbacks: "omniauth"}, :path_names => { :sign_in => 'login'}
+    devise_for :people, skip: :omniauth_callbacks, controllers: { confirmations: "confirmations", registrations: "people", omniauth_callbacks: "omniauth" }, path_names: { sign_in: 'login' }
     devise_scope :person do
       # these matches need to be before the general resources to have more priority
       get "/people/confirmation" => "confirmations#show", :as => :confirmation
@@ -818,7 +818,7 @@ Rails.application.routes.draw do
       # List few specific routes here for Devise to understand those
       get "/signup" => "people#new", :as => :sign_up
 
-      resources :people, param: :username, :path => "", :only => :show, :constraints => { :username => /[_a-z0-9]{3,20}/ }
+      resources :people, param: :username, path: "", only: :show, constraints: { username: /[_a-z0-9]{3,20}/ }
 
       resources :people, except: [:show] do
         collection do
@@ -831,7 +831,7 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :people, except: [:show], :path => "" do
+      resources :people, except: [:show], path: "" do
         resources :listings do
           member do
             put :close
@@ -844,9 +844,9 @@ Rails.application.routes.draw do
         end
         resources :person_messages
 
-        resource :inbox, :only => [:show]
+        resource :inbox, only: [:show]
 
-        resources :messages, :controller => :conversations do
+        resources :messages, controller: :conversations do
           collection do
             # This is only a redirect from old route, changed 2014-09-11
             # You can clean up this later
@@ -867,8 +867,9 @@ Rails.application.routes.draw do
             end
           end
         end
-        resource :paypal_account, only: [:index] do
-          member do
+        resource :paypal_account, only: [] do
+          collection do
+            get :index
             get :ask_order_permission
             get :ask_billing_agreement
             get :permissions_verified

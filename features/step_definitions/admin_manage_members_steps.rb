@@ -101,13 +101,25 @@ When(/^I (.*?)ban user in admin2 "(.*?)"$/) do |unban_str, full_name|
   link = find_element_for_person(full_name, ".#{unban_str}ban-user")
 
   link.click
-  find('#userRevokeAdminRightsModalButton').click
+  # Wait for modal to be visible and href to be set by JavaScript
+  expect(page).to have_css('#userRevokeAdminRightsModal.show')
+  button = find('#userRevokeAdminRightsModalButton')
+  # Ensure href is not just '#' (meaning JavaScript has updated it)
+  expect(button[:href]).not_to eq('#'), "Button href not updated by JavaScript"
+  button.click
+  # Wait for AJAX request to complete
+  sleep 0.5
+  expect(page).not_to have_css('#userRevokeAdminRightsModal.show'), "Modal still visible - request may have failed"
 end
 
 Then(/^"(.*?)" should (.*?)be banned from this community$/) do |username, not_banned|
   not_banned = not_banned.include?('not')
   person = Person.find_by(username: username, community_id: @current_community.id)
-  expect(CommunityMembership.find_by_person_id_and_community_id(person.id, @current_community.id).status).to eq((not_banned ? "accepted" : "banned"))
+  # Wait for AJAX to complete and reload membership to get fresh status
+  sleep 0.5
+  membership = CommunityMembership.find_by_person_id_and_community_id(person.id, @current_community.id)
+  membership.reload
+  expect(membership.status).to eq((not_banned ? "accepted" : "banned"))
 end
 
 Given(/^user "(.*?)" is banned in this community$/) do |username|
@@ -150,7 +162,12 @@ When(/^I promote "(.*?)" to admin2$/) do |full_name|
   link = find_element_for_person(full_name, ".add-admin")
 
   link.click
-  find('#userRevokeAdminRightsModalButton').click
+  # Wait for modal to be visible and href to be set by JavaScript
+  expect(page).to have_css('#userRevokeAdminRightsModal.show')
+  button = find('#userRevokeAdminRightsModalButton')
+  # Ensure href is not just '#' (meaning JavaScript has updated it)
+  expect(button[:href]).not_to eq('#'), "Button href not updated by JavaScript"
+  button.click
 end
 
 Then(/^I should see that I can not remove admin rights of "(.*?)"$/) do |full_name|

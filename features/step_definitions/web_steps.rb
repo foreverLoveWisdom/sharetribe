@@ -224,7 +224,7 @@ Then /^(?:|I )should see "([^"]*)"(?: within "([^"]*)")?$/ do |text, selector|
   with_scope(selector) do
     expect(page).to have_content(text, normalize_ws: true)
   end
-rescue RSpec::Expectations::ExpectationNotMetError
+rescue RSpec::Expectations::ExpectationNotMetError, Selenium::WebDriver::Error::UnknownError
   puts "Timeout waiting for content '#{text}' within '#{selector}'. Will wait 10s and retry one more time."
   sleep 10
   with_scope(selector) do
@@ -250,6 +250,12 @@ Then /^I should see "([^"]*)" in the "([^"]*)" input$/ do |content, field|
 end
 
 Then /^(?:|I )should not see "([^"]*)"(?: within "([^"]*)")?$/ do |text, selector|
+  with_scope(selector) do
+    expect(page).to have_no_content(text)
+  end
+rescue Selenium::WebDriver::Error::UnknownError
+  puts "Inspector error checking absence of '#{text}'. Will wait 10s and retry one more time."
+  sleep 10
   with_scope(selector) do
     expect(page).to have_no_content(text)
   end

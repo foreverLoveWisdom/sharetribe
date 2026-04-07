@@ -83,6 +83,29 @@ module EmailHelpers
   def encode_format(str)
     '=?UTF-8?B?' + Base64.strict_encode64(str) + '?='
   end
+
+  def wait_for_email_count(address, expected, unread: true, subject: nil, subject_is_regex: false)
+    end_t = Time.now + [Capybara.default_max_wait_time, 20].max
+
+    loop do
+      process_jobs
+
+      emails = unread ? unread_emails_for(address) : mailbox_for(address)
+      if subject
+        emails = emails.select { |m|
+          subject_is_regex ? (m.subject =~ Regexp.new(subject)) : (m.subject =~ Regexp.new(Regexp.escape(subject)))
+        }
+      end
+
+      return if emails.size == expected
+
+      if Time.now >= end_t
+        raise "Timed out waiting for #{expected} #{unread ? 'unread ' : ''}emails for #{address}. Got #{emails.size}"
+      end
+
+      sleep 0.1
+    end
+  end
 end
 
 World(EmailHelpers)
@@ -101,31 +124,19 @@ end
 #
 
 Then /^(?:I|they|"([^"]*?)") should receive (an|no|\d+) emails?$/ do |address, amount|
-  steps %Q{
-    When the system processes jobs
-  }
-  expect(unread_emails_for(address).size).to eq(parse_email_count(amount))
+  wait_for_email_count(address, parse_email_count(amount), unread: true)
 end
 
 Then /^(?:I|they|"([^"]*?)") should have (an|no|\d+) emails?$/ do |address, amount|
-  steps %Q{
-    When the system processes jobs
-  }
-  expect(mailbox_for(address).size).to eq(parse_email_count(amount))
+  wait_for_email_count(address, parse_email_count(amount), unread: false)
 end
 
 Then /^(?:I|they|"([^"]*?)") should receive (an|no|\d+) emails? with subject "([^"]*?)"$/ do |address, amount, subject|
-  steps %Q{
-    When the system processes jobs
-  }
-  expect(unread_emails_for(address).select { |m| m.subject =~ Regexp.new(Regexp.escape(subject)) }.size).to eq(parse_email_count(amount))
+  wait_for_email_count(address, parse_email_count(amount), unread: true, subject: subject, subject_is_regex: false)
 end
 
 Then /^(?:I|they|"([^"]*?)") should receive (an|no|\d+) emails? with subject \/([^"]*?)\/$/ do |address, amount, subject|
-  steps %Q{
-    When the system processes jobs
-  }
-  expect(unread_emails_for(address).select { |m| m.subject =~ Regexp.new(subject) }.size).to eq(parse_email_count(amount))
+  wait_for_email_count(address, parse_email_count(amount), unread: true, subject: subject, subject_is_regex: true)
 end
 
 Then /^(?:I|they|"([^"]*?)") should receive an email with the following body:$/ do |address, expected_body|

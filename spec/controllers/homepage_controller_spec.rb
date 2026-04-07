@@ -35,12 +35,13 @@ describe HomepageController, type: :controller do
       # <og:description> and <twitter:description>: the default value
       it "renders default title and description" do
         get :index
-        expect(response.body).to match('<title>Sharetribe - Test slogan</title>')
-        expect(response.body).to match("<meta content='Test description - Test slogan' name='description'>")
-        expect(response.body).to match("<meta content='Sharetribe - Test slogan' property='og:title'>")
-        expect(response.body).to match("<meta content='Sharetribe - Test slogan' name='twitter:title'>")
-        expect(response.body).to match("<meta content='Test description - Test slogan' property='og:description'>")
-        expect(response.body).to match("<meta content='Test description - Test slogan' name='twitter:description'>")
+        doc = Nokogiri::HTML(response.body)
+        expect(doc.at('title')&.text).to eq('Sharetribe - Test slogan')
+        expect(doc.at("meta[name='description']")&.[]('content')).to eq('Test description - Test slogan')
+        expect(doc.at("meta[property='og:title']")&.[]('content')).to eq('Sharetribe - Test slogan')
+        expect(doc.at("meta[name='twitter:title']")&.[]('content')).to eq('Sharetribe - Test slogan')
+        expect(doc.at("meta[property='og:description']")&.[]('content')).to eq('Test description - Test slogan')
+        expect(doc.at("meta[name='twitter:description']")&.[]('content')).to eq('Test description - Test slogan')
       end
 
       # Something in SEO for Homepage/CLP, nothing in Social Media
@@ -51,12 +52,13 @@ describe HomepageController, type: :controller do
       it "renders updated meta title and description" do
         @community.community_customizations.first.update(meta_title: "SEO Title", meta_description: "SEO Description")
         get :index
-        expect(response.body).to match('<title>SEO Title</title>')
-        expect(response.body).to match("<meta content='SEO Description' name='description'>")
-        expect(response.body).to match("<meta content='Sharetribe - Test slogan' property='og:title'>")
-        expect(response.body).to match("<meta content='Sharetribe - Test slogan' name='twitter:title'>")
-        expect(response.body).to match("<meta content='Test description - Test slogan' property='og:description'>")
-        expect(response.body).to match("<meta content='Test description - Test slogan' name='twitter:description'>")
+        doc = Nokogiri::HTML(response.body)
+        expect(doc.at('title')&.text).to eq('SEO Title')
+        expect(doc.at("meta[name='description']")&.[]('content')).to eq('SEO Description')
+        expect(doc.at("meta[property='og:title']")&.[]('content')).to eq('Sharetribe - Test slogan')
+        expect(doc.at("meta[name='twitter:title']")&.[]('content')).to eq('Sharetribe - Test slogan')
+        expect(doc.at("meta[property='og:description']")&.[]('content')).to eq('Test description - Test slogan')
+        expect(doc.at("meta[name='twitter:description']")&.[]('content')).to eq('Test description - Test slogan')
       end
 
       # Nothing in SEO for Homepage/CLP, something in Social Media
@@ -67,12 +69,13 @@ describe HomepageController, type: :controller do
       it 'renders updated meta title and description' do
         @community.community_customizations.first.update(social_media_title: 'Social Title', social_media_description: 'Social Description')
         get :index
-        expect(response.body).to match("<title>Sharetribe - Test slogan</title>")
-        expect(response.body).to match("<meta content='Test description - Test slogan' name='description'>")
-        expect(response.body).to match("<meta content='Social Title' property='og:title'>")
-        expect(response.body).to match("<meta content='Social Title' name='twitter:title'>")
-        expect(response.body).to match("<meta content='Social Description' property='og:description'>")
-        expect(response.body).to match("<meta content='Social Description' name='twitter:description'>")
+        doc = Nokogiri::HTML(response.body)
+        expect(doc.at('title')&.text).to eq('Sharetribe - Test slogan')
+        expect(doc.at("meta[name='description']")&.[]('content')).to eq('Test description - Test slogan')
+        expect(doc.at("meta[property='og:title']")&.[]('content')).to eq('Social Title')
+        expect(doc.at("meta[name='twitter:title']")&.[]('content')).to eq('Social Title')
+        expect(doc.at("meta[property='og:description']")&.[]('content')).to eq('Social Description')
+        expect(doc.at("meta[name='twitter:description']")&.[]('content')).to eq('Social Description')
       end
 
       # Something in SEO for Homepage/CLP, something in Social Media
@@ -85,19 +88,21 @@ describe HomepageController, type: :controller do
           meta_title: 'SEO Title', meta_description: 'SEO Description',
           social_media_title: 'Social Title', social_media_description: 'Social Description')
         get :index
-        expect(response.body).to match("<title>SEO Title</title>")
-        expect(response.body).to match("<meta content='SEO Description' name='description'>")
-        expect(response.body).to match("<meta content='Social Title' property='og:title'>")
-        expect(response.body).to match("<meta content='Social Title' name='twitter:title'>")
-        expect(response.body).to match("<meta content='Social Description' property='og:description'>")
-        expect(response.body).to match("<meta content='Social Description' name='twitter:description'>")
+        doc = Nokogiri::HTML(response.body)
+        expect(doc.at('title')&.text).to eq('SEO Title')
+        expect(doc.at("meta[name='description']")&.[]('content')).to eq('SEO Description')
+        expect(doc.at("meta[property='og:title']")&.[]('content')).to eq('Social Title')
+        expect(doc.at("meta[name='twitter:title']")&.[]('content')).to eq('Social Title')
+        expect(doc.at("meta[property='og:description']")&.[]('content')).to eq('Social Description')
+        expect(doc.at("meta[name='twitter:description']")&.[]('content')).to eq('Social Description')
       end
 
       it "renders updated meta title and description when search params are provided" do
         @community.community_customizations.first.update(search_meta_title: "Search results for {{keywords_searched}}", search_meta_description: "Search results for {{keywords_searched}} at {{location_searched}}")
         get :index, params: {q: 'books', lq: 'New York'}
-        expect(response.body).to match('<title>Search results for books</title>')
-        expect(response.body).to match("<meta content='Search results for books at New York' name='description'>")
+        doc = Nokogiri::HTML(response.body)
+        expect(doc.at('title')&.text).to eq('Search results for books')
+        expect(doc.at("meta[name='description']")&.[]('content')).to eq('Search results for books at New York')
       end
 
       it "renders updated meta title and description when search by category is used" do
@@ -107,8 +112,9 @@ describe HomepageController, type: :controller do
         @category.save
         get :index, params: {category: @category.url}
         category_name = @category.display_name(I18n.locale)
-        expect(response.body).to match("<title>Search results for #{category_name}</title>")
-        expect(response.body).to match("<meta content='Search results for category #{category_name}' name='description'>")
+        doc = Nokogiri::HTML(response.body)
+        expect(doc.at('title')&.text).to eq("Search results for #{category_name}")
+        expect(doc.at("meta[name='description']")&.[]('content')).to eq("Search results for category #{category_name}")
       end
     end
   end

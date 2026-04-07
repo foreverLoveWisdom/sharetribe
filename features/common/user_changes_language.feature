@@ -5,6 +5,10 @@ Feature: User changes language
 
   @javascript
   Scenario: User changes language without logging in
+    Given the test community has following available locales:
+      | locale |
+      | en |
+      | fi |
     Given I am on the home page
     When I follow "new-listing-link"
     And I click the community logo
@@ -14,6 +18,10 @@ Feature: User changes language
 
   @javascript
   Scenario: User changes language when logged in
+    Given the test community has following available locales:
+      | locale |
+      | en |
+      | fi |
     Given I am logged in
     And I open language menu
     And I select "Suomi" from the language menu

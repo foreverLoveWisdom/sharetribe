@@ -32,11 +32,13 @@ module FeatureTests
       end
 
       def click_settings
-        user_menu.click_link("Settings")
+        # Re-find user menu to avoid stale element reference
+        header.find(".header-toggle-menu-user").click_link("Settings")
       end
 
       def click_logout
-        user_menu.click_link("Log out")
+        # Re-find user menu to avoid stale element reference
+        header.find(".header-toggle-menu-user").click_link("Log out")
       end
 
       def click_admin_link

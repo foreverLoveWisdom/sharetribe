@@ -9,7 +9,7 @@ module HTTPUtils
   #  => "application/transit+msgpack"
   #
   def parse_content_type(content_type)
-    return nil if content_type.blank?
+    return nil if content_type.nil? || content_type.to_s.strip.empty?
 
     media_type, = content_type.split(";")
     media_type.downcase.strip

@@ -1,8 +1,9 @@
 source 'https://rubygems.org'
 
-ruby '3.2.2'
+ruby '3.4.8'
 
-gem 'rails', '7.2.2.1'
+gem 'rails', '8.1.2'
+gem 'csv', '3.3.2'
 
 gem 'coffee-rails', '~> 5.0.0'
 gem 'uglifier', '~> 4.2.0'
@@ -20,13 +21,14 @@ gem 'passenger', '~> 6.0.27'
 
 gem 'mysql2', '~> 0.5.6'
 gem 'bcrypt', '~> 3.1.17'
-gem 'haml', '~> 6.2.3'
+gem 'haml', '~> 7.2'
 
 gem 'sass', '3.4.24'
 # gem 'compass', '0.12.2'
 
 gem 'rack-attack', '~> 6.6.1'
 gem 'rest-client', '~> 2.1.0'
+gem 'pstore'
 
 gem 'kt-paperclip', '~> 7.2.2'
 gem 'delayed_paperclip', '~> 3.0.1'
@@ -51,12 +53,12 @@ gem 'delayed_job', '~> 4.1.3'
 gem 'delayed_job_active_record', '~> 4.1.3'
 
 gem 'web_translate_it', '~> 2.6.2'
-gem 'rails-i18n', '~> 7.0'
-gem 'devise', '~> 4.9.4'
+gem 'rails-i18n', '~> 8.0'
+gem 'devise', '~> 5.0'
 gem 'devise-encryptable', '~> 0.2.0'
 gem 'omniauth-facebook', '~> 9.0.0'
 gem 'omniauth-google-oauth2', '~> 1.1.1'
-gem 'omniauth-rails_csrf_protection', '~> 1.0.1'
+gem 'omniauth-rails_csrf_protection', '~> 2.0.1'
 gem 'omniauth-linkedin-openid'
 
 # Dynamic form adds helpers that are needed, e.g. error_messages
@@ -73,8 +75,8 @@ gem 'mercury-rails',
 gem 'countries', '~> 7.1.1'
 gem 'mail_view', '~> 2.0.4'
 gem 'statesman', '~> 12.1.0'
-gem 'premailer-rails', '~> 1.11.1'
-gem 'css_parser', '~> 1.11.0'
+gem 'premailer-rails', '~> 1.12'
+gem 'css_parser', '~> 1.19'
 gem 'stringex', '~> 2.8.5'
 gem 'paypal-sdk-permissions', '~> 1.96.4'
 gem 'paypal-sdk-merchant', '~> 1.117.2'
@@ -128,9 +130,10 @@ end
 group :development do
   gem 'rb-fsevent', require: false
   gem 'listen', '~> 3.7.1'
-  gem 'annotate', '~> 3.2.0'
+  gem 'annotate'
   gem 'zeus', require: false
   gem 'awesome_print', '~> 1.9.2'
+  gem 'benchmark'
 end
 
 group :test do
@@ -164,8 +167,7 @@ gem 'js-routes', '~> 2.2.3'
 # Color utilities needed for landing page
 gem 'color', '~> 1.8'
 gem 'pry', '~> 0.14'
-gem 'uuidtools', '~> 2.2.0'
-gem 'transit-ruby', '0.9', git: 'https://github.com/Charly3X/transit-ruby.git'
+gem 'uuidtools', '~> 3.0'
 
 # Markdown parser
 gem 'redcarpet', '~> 3.6.0'
@@ -177,7 +179,7 @@ gem 'memoist', '~> 0.16.2'
 gem 'biz', '~> 1.8.2'
 gem 'ffi', '~> 1.15.5'
 gem 'rubyzip', '~> 2.3.2'
-gem 'bootsnap', '~> 1.18.4', require: false
+gem 'bootsnap', '~> 1.18', require: false
 gem 'select2-rails', '~> 4.0.13'
 gem 'cocoon', '~> 1.2.15'
 gem 'fast-polylines', '~> 2.2.2'

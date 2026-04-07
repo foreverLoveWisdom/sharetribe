@@ -93,7 +93,7 @@ describe MarketplaceService do
 
       # check that category and shape are linked
       expect(CategoryListingShape.where(listing_shape_id: s[:id]).count).to eq(1)
-      expect(CategoryListingShape.where(listing_shape_id: s[:id]).first.category).to eql c.categories.first
+      expect(CategoryListingShape.find_by(listing_shape_id: s[:id]).category).to eql c.categories.first
     end
 
     it "should have preauthorize_payments enabled" do

@@ -1,6 +1,8 @@
 module ServiceClient
   module Middleware
 
+    require 'possibly'
+
     class JSONEncoder
       def encode(body)
         body.to_json
