@@ -37,7 +37,7 @@ gem 'delayed_paperclip', '~> 3.0.1'
 gem 'image_processing', '~> 1.14.0'
 gem 'mini_magick', '~> 4.11.0'
 
-gem 'aws-sdk-s3', '~> 1.114.0'
+gem 'aws-sdk-s3', '~> 1.208.0'
 gem 'aws-sdk-ses', '~> 1.47.0'
 gem 'will_paginate', '~> 3.3.1'
 gem 'redis', '~> 4.6.0'
@@ -90,7 +90,7 @@ gem 'public_suffix' # Needed currently to set GA hostname right, probably not
 # Session store was removed from Rails 4
 gem 'activerecord-session_store', '~> 2.0.0'
 
-gem 'faraday', '~> 1.10.4'
+gem 'faraday', '~> 1.10.5'
 gem 'faraday_middleware', '~> 1.2.0' # not support faraday 2.0.0
 gem 'faraday-encoding', '~> 0.0.5'
 
