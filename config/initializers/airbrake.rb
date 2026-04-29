@@ -16,15 +16,15 @@ if APP_CONFIG.use_airbrake
   end
 
   Airbrake.add_filter do |notice|
-    errors_to_ignore = [
-      "AbstractController::ActionNotFound",
-      "ActiveRecord::RecordNotFound",
-      "ActionController::RoutingError",
-      "ActionController::UnknownAction",
-      "PeopleController::PersonDeleted",
-      "PeopleController::PersonBanned",
-      "ListingsController::ListingDeleted"
-    ]
+    errors_to_ignore = %w[AbstractController::ActionNotFound
+                          ActiveRecord::RecordNotFound
+                          ActionController::BadRequest
+                          ActionController::RoutingError
+                          ActionDispatch::Mime::InvalidMimeType
+                          ActionController::UnknownAction
+                          PeopleController::PersonDeleted
+                          PeopleController::PersonBanned
+                          ListingsController::ListingDeleted]
     if notice[:errors].any? { |error| errors_to_ignore.include?(error[:type]) }
       notice.ignore!
     end

@@ -10,7 +10,7 @@ class Admin::PlansController < Admin::AdminBaseController
       domain: @current_community.use_domain? ? @current_community.domain : nil,
       marketplace_default_name: marketplace_default_name
     ).on_success { |link|
-      redirect_to link
+      redirect_to link, allow_other_host: true
     }.on_error { |error_msg|
       render_not_found!(error_msg)
     }
